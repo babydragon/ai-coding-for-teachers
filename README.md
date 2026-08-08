@@ -82,6 +82,7 @@
 | --- | --- |
 | 2026-08 | 初版：五个部分 + 附录全部完成 |
 | 2026-08 | 新增「发布到网页」章节与 export.sh 导出脚本（PDF / 单文件 HTML） |
+| 2026-08 | 发布到 GitHub（[github.com/babydragon/ai-coding-for-teachers](https://github.com/babydragon/ai-coding-for-teachers)），采用 CC BY 4.0 许可 |
 
 ## 许可证
 
