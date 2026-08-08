@@ -89,3 +89,7 @@
 本作品采用 [知识共享署名 4.0 国际许可协议（CC BY 4.0）](https://creativecommons.org/licenses/by/4.0/deed.zh-hans) 授权。
 
 您可以自由地共享、复制、分发、修改本作品（包括用于教学和商业用途），唯一要求是保留对原作者（babydragon）的署名。详见 [LICENSE](LICENSE)。
+
+---
+
+▶️ **开始阅读：** [第一部分 · 名词解释 —— 认识 AI 编程里的基本词汇](docs/01-ai-coding-basics/01-名词解释.md)
