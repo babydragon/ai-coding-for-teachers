@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>竖式乘法小游戏 · 三年级数学</title>
+<style>
+  /* ============ 基础 ============ */
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+    background: linear-gradient(160deg, #fff8e1 0%, #ffe0b2 100%);
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    padding: 16px;
+  }
+  .app {
+    background: #ffffff;
+    border-radius: 32px;
+    box-shadow: 0 12px 40px rgba(230, 140, 20, 0.25);
+    padding: 28px 24px 24px;
+    width: 100%; max-width: 560px;
+    text-align: center;
+  }
+  h1 { font-size: 30px; color: #f57c00; margin-bottom: 4px; }
+  .subtitle { font-size: 15px; color: #8d6e63; margin-bottom: 12px; }
+  .stars { font-size: 26px; letter-spacing: 6px; margin: 6px 0 14px; }
+
+  /* ============ 竖式区域 ============ */
+  .board {
+    position: relative;
+    background: #fffde7;
+    border: 3px solid #ffcc80;
+    border-radius: 24px;
+    padding: 22px 12px 12px;
+    margin: 10px auto 14px;
+    min-height: 240px;
+  }
+  .calc-grid {
+    position: relative;
+    display: inline-grid;
+    gap: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .cell {
+    width: 58px; height: 54px;
+    font-size: 38px; font-weight: 700; color: #4e342e;
+    display: flex; justify-content: center; align-items: center;
+    border-radius: 12px;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .cell.dim { color: #bcaaa4; }
+  .cell.active {
+    background: #ffd54f;
+    transform: scale(1.12);
+    box-shadow: 0 4px 12px rgba(255, 170, 0, 0.5);
+    animation: pop 0.5s ease;
+  }
+  .cell.carry-cell {
+    background: #ffcdd2; color: #c62828;
+    font-size: 26px; height: 40px;
+  }
+  .cell.result-cell {
+    background: #c8e6c9; color: #2e7d32;
+  }
+  .cell.answer {
+    animation: appear 0.6s ease;
+  }
+  .rule-line {
+    grid-column: 1 / -1;
+    border-top: 4px solid #4e342e;
+    margin: 2px 0;
+  }
+  .times { grid-column: 1; }
+  @keyframes pop   { 0%{transform:scale(1)} 50%{transform:scale(1.25)} 100%{transform:scale(1.12)} }
+  @keyframes appear{ 0%{opacity:0; transform:scale(0.4)} 100%{opacity:1; transform:scale(1)} }
+
+  /* 进位飞行数字 */
+  .fly-carry {
+    position: absolute;
+    width: 44px; height: 44px;
+    background: #e53935; color: #fff;
+    border-radius: 50%;
+    font-size: 26px; font-weight: 800;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(229,57,53,0.5);
+    pointer-events: none;
+  }
+
+  /* ============ 提示与输入 ============ */
+  .hint {
+    font-size: 21px; color: #5d4037;
+    background: #fff3e0;
+    border-radius: 16px;
+    padding: 12px 14px;
+    min-height: 66px;
+    display: flex; justify-content: center; align-items: center;
+    margin: 0 0 14px;
+    line-height: 1.5;
+  }
+  .hint .big { font-size: 27px; font-weight: 800; color: #e65100; }
+  .input-row {
+    display: flex; justify-content: center; align-items: center;
+    gap: 10px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+  .input-group {
+    background: #f1f8e9;
+    border-radius: 14px; padding: 8px 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .input-group label { font-size: 14px; color: #558b2f; font-weight: 700; }
+  .input-group input {
+    width: 84px; height: 48px;
+    font-size: 30px; font-weight: 800; text-align: center;
+    border: 3px solid #aed581; border-radius: 12px;
+    color: #33691e; background: #fff; outline: none;
+  }
+  .input-group input:focus { border-color: #689f38; }
+  .input-group input.ok  { border-color: #43a047; background: #e8f5e9; }
+  .input-group input.bad { border-color: #e53935; background: #ffebee; animation: shake 0.4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  .buttons { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  button {
+    font-size: 22px; font-weight: 800;
+    border: none; border-radius: 999px;
+    padding: 14px 26px; cursor: pointer;
+    color: #fff; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  button:hover  { transform: translateY(-2px); }
+  button:active { transform: scale(0.95); }
+  .btn-main { background: #fb8c00; box-shadow: 0 6px 0 #ef6c00; }
+  .btn-ok   { background: #43a047; box-shadow: 0 6px 0 #2e7d32; }
+  .btn-demo { background: #1e88e5; box-shadow: 0 6px 0 #1565c0; }
+  .btn-new  { background: #8d6e63; box-shadow: 0 6px 0 #5d4037; }
+  .btn-calm { background: #aed581; color: #33691e; box-shadow: 0 6px 0 #7cb342; }
+  .btn-hint { background: #ffb74d; color: #5d4037; box-shadow: 0 6px 0 #fb8c00; font-size: 18px; padding: 12px 20px; }
+
+  .celebration {
+    position: fixed; inset: 0; pointer-events: none;
+    font-size: 40px; z-index: 100;
+  }
+  .confetti { position: absolute; animation: fall 2s ease-in forwards; }
+  @keyframes fall { from{ transform: translateY(-40px) rotate(0); opacity:1 } to{ transform: translateY(110vh) rotate(360deg); opacity:0 } }
+
+  /* ============ 结果页 ============ */
+  .summary { padding: 10px 0; }
+  .summary .title { font-size: 34px; font-weight: 900; color: #f57c00; margin-bottom: 8px; }
+  .summary .msg { font-size: 22px; color: #5d4037; margin-bottom: 16px; line-height: 1.6; }
+  .summary .medal { font-size: 70px; margin-bottom: 10px; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>🎯 竖式乘法小游戏</h1>
+  <div class="subtitle">三年级数学 · 多位数 × 一位数</div>
+  <div class="stars" id="stars">☆☆☆☆☆</div>
+
+  <!-- 竖式板 -->
+  <div class="board">
+    <div class="calc-grid" id="grid"></div>
+  </div>
+
+  <!-- 提示 -->
+  <div class="hint" id="hint">点击下方按钮开始！</div>
+
+  <!-- 输入区（练习模式用） -->
+  <div class="input-row hidden" id="inputRow">
+    <div class="input-group">
+      <label>本位的积（个位）</label>
+      <input id="inProd" type="number" inputmode="numeric" min="0" max="9">
+    </div>
+    <div class="input-group">
+      <label>进位</label>
+      <input id="inCarry" type="number" inputmode="numeric" min="0" max="9">
+    </div>
+  </div>
+
+  <!-- 按钮 -->
+  <div class="buttons" id="btnRow">
+    <button class="btn-demo" id="btnDemo">▶ 看演示</button>
+    <button class="btn-ok" id="btnPractice">✏️ 我来算</button>
+    <button class="btn-new" id="btnNew">🔄 换一题</button>
+  </div>
+  <div class="buttons hidden" id="okRow" style="margin-top:10px">
+    <button class="btn-hint" id="btnHint">💡 给个提示</button>
+    <button class="btn-ok" id="btnCheck">✓ 检查</button>
+    <button class="btn-calm" id="btnAbort">返回</button>
+  </div>
+
+  <!-- 结果页 -->
+  <div class="summary hidden" id="summary">
+    <div class="medal" id="medal">🏅</div>
+    <div class="title" id="sumTitle"></div>
+    <div class="msg" id="sumMsg"></div>
+    <button class="btn-main" id="btnAgain">再来一局！</button>
+  </div>
+</div>
+
+<div class="celebration hidden" id="celebration"></div>
+
+<script>
+/* ================= 游戏状态 ================= */
+let digits = [];      // 被乘数的每一位（从高位到低位），如 [3,6]
+let mult = 0;         // 乘数（一位数）
+let resDigits = [];   // 完整结果的每一位（从高位到低位）
+let steps = [];       // 计算步骤，见 genSteps
+let mode = "idle";    // idle | demo | practice
+let stepIdx = 0;
+let stars = 0;
+let correctStreak = 0;
+let timer = null;
+
+/* ================= 出题 ================= */
+function genQuestion() {
+  const len = 2 + Math.floor(Math.random() * 2);      // 2 或 3 位
+  digits = [];
+  for (let i = 0; i < len; i++) {
+    digits.push(i === 0 ? 1 + Math.floor(Math.random() * 9) : Math.floor(Math.random() * 10));
+  }
+  mult = 2 + Math.floor(Math.random() * 8);           // 2~9
+  buildSteps();
+}
+
+/* 生成竖式计算的每一步（从个位算起） */
+function buildSteps() {
+  steps = [];
+  let carry = 0;
+  const n = digits.length;
+  // 从低位到高位：结果位存到 resLow[0] 是结果的个位
+  const resLow = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const p = digits[i] * mult + carry;
+    resLow.push(p % 10);
+    const newCarry = Math.floor(p / 10);
+    steps.push({ pos: i, d: digits[i], p, write: p % 10, carryOut: newCarry, carryIn: carry });
+    carry = newCarry;
+  }
+  if (carry > 0) resLow.push(carry);
+  resDigits = resLow.reverse();   // 高位在前
+}
+
+/* ================= 渲染竖式 ================= */
+/* 竖式网格列数 = 结果位数；被乘数、乘数、结果都按这个列数右对齐 */
+function renderGrid() {
+  const cols = resDigits.length;
+  const grid = document.getElementById("grid");
+  grid.style.gridTemplateColumns = `repeat(${cols}, 58px)`;
+  let html = "";
+  // 行1：被乘数（右对齐，只有有效位有数字）
+  for (let c = 0; c < cols; c++) {
+    const di = c - (cols - digits.length);   // 该列对应被乘数哪一位
+    const v = di >= 0 ? digits[di] : null;
+    html += `<div class="cell${v === null ? " dim" : ""}" data-digit="${di}">${v === null ? "" : v}</div>`;
+  }
+  // 行2：乘号 + 乘数
+  for (let c = 0; c < cols; c++) {
+    if (c === cols - 1) html += `<div class="cell" data-mult>× ${mult}</div>`;
+    else html += `<div class="cell"></div>`;
+  }
+  html += `<div class="rule-line"></div>`;
+  // 行3：结果（练习模式先显示 ? 或逐步显示）
+  for (let c = 0; c < cols; c++) {
+    html += `<div class="cell" data-res="${c}">?</div>`;
+  }
+  grid.innerHTML = html;
+  // 行4（中间步骤/进位）用单独渲染
+  renderCarryArea();
+}
+
+/* 进位标记行：显示当前已计算的进位（演示模式逐步出现） */
+function renderCarryArea() {
+  const grid = document.getElementById("grid");
+  // 移除旧的进位行
+  grid.querySelectorAll(".carry-row").forEach(el => el.remove());
+  const cols = resDigits.length;
+  let html = "";
+  for (let c = 0; c < cols; c++) html += `<div class="cell carry-cell"></div>`;
+  const row = document.createElement("div");
+  row.className = "carry-row";
+  row.style.cssText = `display:contents;`;
+  row.innerHTML = html;
+  grid.appendChild(row);
+}
+
+/* ================= 步骤推进（演示模式） ================= */
+function runDemo() {
+  mode = "demo";
+  showOnly("demo");
+  stepIdx = 0;
+  resetBoard();
+  advanceDemo();
+}
+
+function advanceDemo() {
+  if (stepIdx >= steps.length + 1) { finishStep(); return; }
+  const s = steps[stepIdx];
+  const hint = document.getElementById("hint");
+  const grid = document.getElementById("grid");
+
+  // 高亮当前位
+  clearActive();
+  if (s) {
+    const cell = grid.querySelector(`[data-digit="${s.pos}"]`);
+    if (cell) cell.classList.add("active");
+    hint.innerHTML = `从<span class="big"> ${s.d} </span>位乘起：<span class="big">${s.d} × ${mult}</span>`;
+    // 显示计算气泡：先展示乘积
+    timer = setTimeout(() => {
+      hint.innerHTML = `${s.d} × ${mult} = <span class="big">${s.p}</span>，写 ${s.write}`;
+      // 写结果位（该列结果 = 这一步 write）
+      const resCell = grid.querySelector(`[data-res="${colsOf(s.pos)}"]`);
+      if (resCell) { resCell.textContent = s.write; resCell.classList.add("result-cell", "answer"); }
+      if (s.carryOut > 0) {
+        hint.innerHTML += `，进 <span class="big">${s.carryOut}</span>`;
+        flyCarry(s.carryOut, s.pos);
+        // 写入进位标记
+        setTimeout(() => {
+          const cr = grid.querySelector(`.carry-cell:nth-child(${colsOf(s.pos) + 1})`);
+          if (cr) cr.textContent = s.carryOut;
+        }, 700);
+      }
+      timer = setTimeout(() => { stepIdx++; advanceDemo(); }, 1900);
+    }, 1400);
+  } else {
+    // 全部算完，把最后的进位写到最前面（若最高位结果行已是该值，前面已显示）
+    hint.innerHTML = "算完啦！一起看看完整结果：";
+    timer = setTimeout(() => { finishStep(); }, 1600);
+  }
+}
+
+/* 某一计算位对应结果网格的哪一列（从右往左数第 pos 位 → 列下标） */
+function colsOf(pos) {
+  return resDigits.length - 1 - (digits.length - 1 - pos);
+}
+
+/* 演示结束：显示结果 + 星星 */
+function finishStep() {
+  const grid = document.getElementById("grid");
+  grid.querySelectorAll("[data-res]").forEach((el, i) => {
+    el.textContent = resDigits[i];
+    el.classList.add("result-cell", "answer");
+  });
+  clearActive();
+  if (mode === "demo") {
+    document.getElementById("hint").innerHTML = "看明白了吗？点「✏️ 我来算」自己试一试！";
+  } else {
+    document.getElementById("hint").innerHTML = "全部算对，太棒了！";
+    addStar();
+    celebrate();
+  }
+  showOnly(mode);
+}
+
+function clearActive() {
+  document.querySelectorAll(".cell.active").forEach(el => el.classList.remove("active"));
+}
+
+/* 进位数字飞行动画：从当前位飞到上一位（高位） */
+function flyCarry(v, pos) {
+  const grid = document.getElementById("grid");
+  const src = grid.querySelector(`[data-digit="${pos}"]`);
+  if (!src) return;
+  const board = document.querySelector(".board");
+  const gr = grid.getBoundingClientRect();
+  const sr = src.getBoundingClientRect();
+  const targetPos = pos - 1;
+  const tr = targetPos >= 0
+    ? grid.querySelector(`[data-digit="${targetPos}"]`).getBoundingClientRect()
+    : grid.querySelector(`[data-res="0"]`).getBoundingClientRect();
+  const fly = document.createElement("div");
+  fly.className = "fly-carry";
+  fly.textContent = v;
+  fly.style.left = (sr.left - gr.left + sr.width / 2 - 22) + "px";
+  fly.style.top  = (sr.top - gr.top - 40) + "px";
+  grid.appendChild(fly);
+  requestAnimationFrame(() => {
+    fly.style.transition = "all 0.7s ease";
+    fly.style.left = (tr.left - gr.left + tr.width / 2 - 22) + "px";
+    fly.style.top  = (tr.top - gr.top - 70) + "px";
+  });
+  setTimeout(() => fly.remove(), 900);
+}
+
+/* ================= 练习模式 ================= */
+function startPractice() {
+  mode = "practice";
+  showOnly("practice");
+  stepIdx = 0;
+  resetBoard();
+  clearActive();
+  document.getElementById("inProd").value = "";
+  document.getElementById("inCarry").value = "";
+  presentStep();
+}
+
+function presentStep() {
+  const hint = document.getElementById("hint");
+  if (stepIdx >= steps.length + 1) { finishStep(); return; }
+  if (stepIdx === steps.length) {
+    hint.innerHTML = "最后一步！把进位的数写到最前面。";
+    document.getElementById("inProd").placeholder = "最高位";
+    document.getElementById("inCarry").disabled = true;
+    return;
+  }
+  const s = steps[stepIdx];
+  document.getElementById("inCarry").disabled = false;
+  document.getElementById("inCarry").placeholder = "";
+  hint.innerHTML = `第 ${stepIdx + 1} 步：<span class="big">${s.d} × ${mult}</span>${s.carryIn ? `，加上进位的 ${s.carryIn}` : ""} = ?`;
+  clearActive();
+  const cell = document.querySelector(`[data-digit="${s.pos}"]`);
+  if (cell) cell.classList.add("active");
+  document.getElementById("inProd").focus();
+}
+
+function checkAnswer() {
+  const hint = document.getElementById("hint");
+  const inProd = document.getElementById("inProd");
+  const inCarry = document.getElementById("inCarry");
+  const pv = parseInt(inProd.value, 10);
+  const cv = inCarry.disabled ? 0 : parseInt(inCarry.value, 10);
+  if (isNaN(pv) || (isNaN(cv) && !inCarry.disabled)) {
+    hint.innerHTML = "先填好数字再检查哦 😊";
+    return;
+  }
+  const s = steps[stepIdx];
+  const okProd = pv === s.write;
+  const okCarry = (inCarry.disabled && s.carryOut === 0) || (!inCarry.disabled && cv === s.carryOut);
+
+  if (okProd && okCarry) {
+    inProd.classList.remove("bad"); inProd.classList.add("ok");
+    if (!inCarry.disabled) inCarry.classList.add("ok");
+    // 写入结果位
+    const grid = document.getElementById("grid");
+    const resCell = grid.querySelector(`[data-res="${colsOf(s.pos)}"]`);
+    if (resCell) { resCell.textContent = s.write; resCell.classList.add("result-cell", "answer"); }
+    const cr = grid.querySelector(`.carry-cell:nth-child(${colsOf(s.pos) + 1})`);
+    if (cr && s.carryOut > 0) cr.textContent = s.carryOut;
+    const praises = ["太棒了！", "答对啦！", "你真聪明！", "好厉害！", "继续加油！"];
+    hint.innerHTML = praises[Math.floor(Math.random() * praises.length)];
+    stepIdx++;
+    setTimeout(() => {
+      inProd.value = ""; inCarry.value = "";
+      inProd.classList.remove("ok"); inCarry.classList.remove("ok");
+      presentStep();
+    }, 900);
+  } else {
+    inProd.classList.add("bad");
+    setTimeout(() => inProd.classList.remove("bad"), 600);
+    if (!inCarry.disabled) { inCarry.classList.add("bad"); setTimeout(() => inCarry.classList.remove("bad"), 600); }
+    hint.innerHTML = "再想一想，哪一步算错了？💪";
+  }
+}
+
+function giveHint() {
+  const s = steps[stepIdx];
+  if (!s) return;
+  const hint = document.getElementById("hint");
+  hint.innerHTML = `提示：${s.d} × ${mult}${s.carryIn ? ` + ${s.carryIn}` : ""} = <span class="big">${s.p}</span>，所以个位写 ${s.write}${s.carryOut ? `，进 ${s.carryOut}` : "，没有进位"}`;
+}
+
+/* ================= 计分与庆祝 ================= */
+function addStar() {
+  if (stars < 5) stars++;
+  document.getElementById("stars").textContent = "★".repeat(stars) + "☆".repeat(5 - stars);
+  correctStreak++;
+  if (correctStreak >= 5) showSummary();
+}
+
+function celebrate() {
+  const c = document.getElementById("celebration");
+  c.classList.remove("hidden");
+  const emojis = ["🎉", "⭐", "🎈", "🌟", "🎊", "💖", "🌈"];
+  for (let i = 0; i < 16; i++) {
+    const s = document.createElement("span");
+    s.className = "confetti";
+    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.top = "-40px";
+    s.style.animationDelay = Math.random() * 0.8 + "s";
+    s.style.fontSize = 28 + Math.random() * 24 + "px";
+    c.appendChild(s);
+  }
+  setTimeout(() => { c.classList.add("hidden"); c.innerHTML = ""; }, 3000);
+}
+
+function showSummary() {
+  mode = "summary";
+  document.getElementById("stars").textContent = "★".repeat(5);
+  document.getElementById("sumTitle").textContent = "🎊 全部完成！";
+  const msgs = [
+    "你已经是竖式小高手了！",
+    "五道全对，真了不起！",
+    "进位算得又快又准！",
+    "明天可以挑战更大的数了！"
+  ];
+  document.getElementById("sumMsg").textContent = msgs[Math.floor(Math.random() * msgs.length)];
+  document.getElementById("summary").classList.remove("hidden");
+  document.getElementById("btnRow").classList.add("hidden");
+  document.getElementById("okRow").classList.add("hidden");
+  document.getElementById("inputRow").classList.add("hidden");
+  document.getElementById("grid").innerHTML = "";
+  document.getElementById("hint").classList.add("hidden");
+  celebrate();
+}
+
+function restart() {
+  correctStreak = 0;
+  document.getElementById("stars").textContent = "☆☆☆☆☆";
+  document.getElementById("summary").classList.add("hidden");
+  document.getElementById("btnRow").classList.remove("hidden");
+  document.getElementById("hint").classList.remove("hidden");
+  document.getElementById("hint").textContent = "点击按钮开始！";
+  newQuestion();
+}
+
+/* ================= 工具函数 ================= */
+function resetBoard() {
+  clearTimeout(timer);
+  document.getElementById("summary").classList.add("hidden");
+  document.getElementById("hint").classList.remove("hidden");
+  document.getElementById("grid").querySelectorAll(".fly-carry").forEach(el => el.remove());
+  renderGrid();
+}
+
+function newQuestion() {
+  genQuestion();
+  mode = "idle";
+  clearTimeout(timer);
+  document.getElementById("grid").querySelectorAll(".fly-carry").forEach(el => el.remove());
+  document.getElementById("inProd").value = "";
+  document.getElementById("inCarry").value = "";
+  document.getElementById("inCarry").disabled = false;
+  renderGrid();
+  document.getElementById("hint").textContent =
+    `这题是 ${digits.join("")} × ${mult}，先看演示，再自己算！`;
+  showOnly("idle");
+}
+
+/* 显示/隐藏 按钮组：idle/demo/practice */
+function showOnly(m) {
+  const btnRow = document.getElementById("btnRow");
+  const okRow = document.getElementById("okRow");
+  const inputRow = document.getElementById("inputRow");
+  if (m === "practice") {
+    btnRow.classList.add("hidden");
+    okRow.classList.remove("hidden");
+    inputRow.classList.remove("hidden");
+  } else {
+    btnRow.classList.remove("hidden");
+    okRow.classList.add("hidden");
+    inputRow.classList.add("hidden");
+  }
+}
+
+/* ================= 事件绑定 ================= */
+document.getElementById("btnDemo").addEventListener("click", runDemo);
+document.getElementById("btnPractice").addEventListener("click", startPractice);
+document.getElementById("btnNew").addEventListener("click", newQuestion);
+document.getElementById("btnCheck").addEventListener("click", checkAnswer);
+document.getElementById("btnHint").addEventListener("click", giveHint);
+document.getElementById("btnAbort").addEventListener("click", () => {
+  mode = "idle";
+  clearTimeout(timer);
+  newQuestion();
+});
+document.getElementById("btnAgain").addEventListener("click", restart);
+document.getElementById("inProd").addEventListener("keydown", e => {
+  if (e.key === "Enter") { if (stepIdx === steps.length) return; checkAnswer(); }
+});
+document.getElementById("inCarry").addEventListener("keydown", e => {
+  if (e.key === "Enter") checkAnswer();
+});
+
+/* ================= 启动 ================= */
+newQuestion();
+</script>
+</body>
+</html>
