@@ -35,7 +35,6 @@ CHAPTERS=(
   "docs/01-ai-coding-basics/02-agent编码原理.md"
   "docs/02-tool-guide/01-安装与模型配置.md"
   "docs/02-tool-guide/02-界面与常用操作.md"
-  "docs/02-tool-guide/03-发布到网页.md"
   "docs/03-example/01-竖式乘法小游戏.md"
   "docs/04-agents-md/01-什么是AGENTS.md.md"
   "docs/04-agents-md/02-学生工具通用要求与模板.md"

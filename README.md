@@ -38,50 +38,16 @@
 - [示例游戏成品（竖式乘法，可直接双击打开）](examples/竖式乘法游戏/index.html)
 - [可复制的 AGENTS.md 模板文件](templates/)
 
-## 导出与发布
+---
 
-这份文档可以用一行命令导出成 PDF 或单文件网页版（**零依赖**：只需要系统里有 Python 3 和任意一个浏览器，Chrome/Edge 均可，无需安装任何库）：
-
-```bash
-./export.sh                # 导出完整 PDF 到 dist/
-./export.sh --html         # 导出单文件 HTML（适合发布到网页）
-./export.sh --file 路径.md  # 只导出某一个章节
-./export.sh --out 自定义名   # 自定义输出文件名
-```
-
-- **离线阅读/打印**：用 `./export.sh` 得到 PDF，发给同事、打印都很方便。
-- **在线查看（推荐给老师）**：把仓库推送到 GitHub，所有 `.md` 文件在 GitHub 上可直接阅读，章节之间的链接自动可点，无需任何配置。
-- **做成好看的网页**：用 `./export.sh --html` 生成单文件 HTML，上传到 GitHub Pages 或 Cloudflare Pages 即可在线访问（参见 [发布到网页的三种方式](docs/02-tool-guide/03-发布到网页.md)）。
-
-### 如何添加图片（如软件截图）
-
-1. **图片统一放在根目录 `assets/` 文件夹**（没有就新建一个）。
-2. 在章节里用相对路径引用，`alt` 写一句说明（屏幕阅读器也能读）：
-
-   ```markdown
-   ![Reasonix 主界面截图](../assets/reasonix-主界面.png)
-   ```
-
-   > ⚠️ 路径里的 `../` 是根据「md 文件所在的文件夹层级」来写的：`docs/01-ai-coding-basics/` 下的文件引用 `assets/` 要用 `../../assets/`；`docs/02-tool-guide/` 下用 `../assets/`。
-3. 正常导出即可，**无需任何额外操作**：
-
-   - **PDF / 单文件 HTML**：`export.sh` 会自动把图片以 base64 内联进文件，导出后图片照常显示，不需要带着图片文件夹一起拷贝。
-   - **GitHub 直接查看**：相对路径的图片在 GitHub 上也能正常显示。
-   - 若某张图找不到，导出时会打印 `⚠️ 找不到图片` 警告，但不会中断导出——检查一下路径即可。
-
-### 文档约定
-
-- 文中的 `Reasonix` 指本工具（桌面 GUI 版本）。
-- 界面描述以 Reasonix 桌面版 v1.19.x 为基准，不同小版本可能略有差异。
-- 需要你在电脑上操作的地方，都用「👉 动手做」标记。
-- 提醒你注意的地方，都用「⚠️ 注意」标记。
+> 🔧 **仓库维护者请看这里：** 导出 PDF / 网页版、在线发布方式、如何添加图片、文档写作约定，都写在 [INSTALL.md](INSTALL.md) 里。
 
 ## 更新日志
 
 | 日期 | 内容 |
 | --- | --- |
 | 2026-08 | 初版：五个部分 + 附录全部完成 |
-| 2026-08 | 新增「发布到网页」章节与 export.sh 导出脚本（PDF / 单文件 HTML） |
+| 2026-08 | 新增 export.sh 导出脚本（PDF / 单文件 HTML）与 INSTALL.md 维护指南 |
 | 2026-08 | 发布到 GitHub（[github.com/babydragon/ai-coding-for-teachers](https://github.com/babydragon/ai-coding-for-teachers)），采用 CC BY 4.0 许可 |
 
 ## 许可证
