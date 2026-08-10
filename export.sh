@@ -28,7 +28,7 @@ CONVERTER="$SCRIPT_DIR/tools/md2html.py"
 DIST_DIR="$SCRIPT_DIR/dist"
 TMP_DIR="$SCRIPT_DIR/.export-tmp"
 
-# 文档顺序：README 封面 + 五个部分（每部分内部按文件名排序）+ 附录
+# 文档顺序：README 封面 + 六个部分（每部分内部按文件名排序）+ 附录
 CHAPTERS=(
   "README.md"
   "docs/01-ai-coding-basics/01-名词解释.md"
@@ -40,6 +40,12 @@ CHAPTERS=(
   "docs/04-agents-md/02-学生工具通用要求与模板.md"
   "docs/04-agents-md/03-安装与更新.md"
   "docs/05-templates/01-模板库.md"
+  "docs/06-进阶使用/01-把需求说清楚.md"
+  "docs/06-进阶使用/02-日常文本工作.md"
+  "docs/06-进阶使用/03-让AI干更重的活.md"
+  "docs/06-进阶使用/04-让AI连接更多.md"
+  "docs/06-进阶使用/05-让AI掌握技能.md"
+  "docs/06-进阶使用/06-进阶问答.md"
   "docs/附录-术语速查与FAQ.md"
 )
 

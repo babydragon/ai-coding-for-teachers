@@ -21,6 +21,10 @@
 | 亲手做一个「竖式乘法」动画小游戏 | [第三部分：动手做小游戏](docs/03-example/01-竖式乘法小游戏.md) |
 | 用一份 AGENTS.md 让 AI 不乱发挥，按你的要求做 | [第四部分：AGENTS.md 的制定](docs/04-agents-md/01-什么是AGENTS.md.md) |
 | 针对不同年级、科目快速选模板 | [第五部分：AGENTS.md 模板库](docs/05-templates/01-模板库.md) |
+| 把需求说清楚，让 AI 一次做对 | [第六部分：进阶使用](docs/06-进阶使用/01-把需求说清楚.md) |
+| 让 AI 整理表格、汇总数据、处理图片 | [AI 当秘书：日常文本工作](docs/06-进阶使用/02-日常文本工作.md) |
+| 判断要不要装依赖、怎么安全地装 | [安装依赖的正确姿势](docs/06-进阶使用/03-让AI干更重的活.md) |
+| 给 AI 接新能力（MCP）和教它做事方法（Skill） | [MCP 入门](docs/06-进阶使用/04-让AI连接更多.md) · [Skill 入门](docs/06-进阶使用/05-让AI掌握技能.md) |
 | 快速查词、查常见问题 | [附录：术语速查与 FAQ](docs/附录-术语速查与FAQ.md) |
 
 ## 建议的阅读路径
@@ -31,6 +35,9 @@
 
 已经会用 Reasonix 的老师：
   直接看第三部分做游戏，再看第四、五部分把 AGENTS.md 用起来
+
+想进阶的老师（基础功能已熟悉）：
+  第六部分：把需求说清楚 → 日常文本工作 → 按需看 MCP / Skill
 ```
 
 ## 配套资源
@@ -48,6 +55,7 @@
 | --- | --- |
 | 2026-08 | 初版：五个部分 + 附录全部完成 |
 | 2026-08 | 新增 export.sh 导出脚本（PDF / 单文件 HTML）与 INSTALL.md 维护指南 |
+| 2026-08 | 新增第六部分（进阶使用）：需求描述、日常文本工作（含图片处理）、依赖安装、MCP、Skill、FAQ |
 | 2026-08 | 发布到 GitHub（[github.com/babydragon/ai-coding-for-teachers](https://github.com/babydragon/ai-coding-for-teachers)），采用 CC BY 4.0 许可 |
 
 ## 许可证
